@@ -137,7 +137,7 @@ Object.keys(SITES_LIST).forEach((siteKey) => {
 
 export const CONFIG = {
   default: {
-    landingPath: '/win10/overview?numDays=60',
+    landingPath: '/linux64/overview?numDays=60',
     dayRange: 60, // # days
     colors: [COLORS.http3, COLORS.http2],
     labels: ['HTTP3', 'HTTP2'],
@@ -147,31 +147,6 @@ export const CONFIG = {
     linux64: {
       label: 'Linux 64bit',
       platforms: ['linux64-shippable'],
-      benchmarks: DEFAULT_SUITES,
-    },
-    mac: {
-      label: 'Mac OS X',
-      platforms: ['macosx1014-64-shippable'],
-      benchmarks: DEFAULT_SUITES,
-    },
-    win7: {
-      label: 'Windows 7 32bit',
-      platforms: ['windows7-32-shippable'],
-      benchmarks: DEFAULT_SUITES,
-    },
-    win10: {
-      label: 'Windows 10 64bit',
-      platforms: ['windows10-64-shippable'],
-      benchmarks: DEFAULT_SUITES,
-    },
-    win10ref2017: {
-      label: 'Windows 10 64bit (2017 reference laptop)',
-      platforms: ['windows10-64-ux', 'windows10-64-ref-hw-2017'],
-      benchmarks: DEFAULT_SUITES,
-    },
-    windows10Aarch64: {
-      label: 'Windows 10 ARM64',
-      platforms: ['windows10-aarch64'],
       benchmarks: DEFAULT_SUITES,
     },
   },
