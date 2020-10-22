@@ -847,6 +847,8 @@ export const AWFY_BENCHMARKS = {
 
 export const BENCHMARKS = { ...AWFY_BENCHMARKS, ...AWSY_BENCHMARKS };
 
+const VISUAL_METRICS = ['SpeedIndex', 'ContentfulSpeedIndex', 'PerceptualSpeedIndex'];
+
 const DESKTOP_SITES = {
   apple: 'Apple',
   amazon: 'Amazon',
@@ -901,6 +903,7 @@ const DESKTOP_APPS = {
   firefox: {
     name: 'firefox',
     label: 'Firefox',
+    project: ALT_PROJECT,
   },
   'firefox-fission': {
     name: 'firefox',
@@ -926,26 +929,28 @@ const DESKTOP_APPS = {
 
 Object.entries(DESKTOP_SITES).forEach(([siteKey, siteLabel]) => {
   ['cold', 'warm'].forEach((cacheVariant) => {
-    const bmKey = `tp6-${siteKey}-${cacheVariant}`;
-    BENCHMARKS[bmKey] = { compare: {}, label: siteLabel };
-    Object.entries(DESKTOP_APPS).forEach(([appKey, app]) => {
-      BENCHMARKS[bmKey].compare[appKey] = {
-        color: COLORS[appKey],
-        label: app.label,
-        frameworkId: RAPTOR_FRAMEWORK_ID,
-        suite: `raptor-tp6-${siteKey}-${app.name}`,
-        platformSuffix: app.platformSuffix,
-        option: 'opt',
-        extraOptions: app.extraOptions,
-      };
-      if (cacheVariant === 'cold') {
-        BENCHMARKS[bmKey].compare[appKey].suite += '-cold';
-        if (['firefox', 'firefox-webrender'].includes(appKey)) {
-          BENCHMARKS[bmKey].compare[appKey].project = ALT_PROJECT;
+    VISUAL_METRICS.forEach((test) => {
+      const bmKey = `tp6-${siteKey}-${test}-${cacheVariant}`;
+      BENCHMARKS[bmKey] = { compare: {}, label: `${siteLabel} (${test})` };
+      Object.entries(DESKTOP_APPS).forEach(([appKey, app]) => {
+        BENCHMARKS[bmKey].compare[appKey] = {
+          color: COLORS[appKey],
+          label: app.label,
+          frameworkId: BROWSERTIME_FRAMEWORK_ID,
+          suite: siteKey,
+          test,
+          application: app.name,
+          platformSuffix: app.platformSuffix,
+          project: app.project,
+          option: 'opt',
+          extraOptions: [cacheVariant],
+        };
+        if (Array.isArray(app.extraOptions)) {
+          BENCHMARKS[bmKey].compare[appKey].extraOptions.push(...app.extraOptions);
         }
-      }
+      });
+      DEFAULT_CATEGORIES[`${cacheVariant}-page-load`].suites.push(bmKey);
     });
-    DEFAULT_CATEGORIES[`${cacheVariant}-page-load`].suites.push(bmKey);
   });
 });
 
@@ -1034,25 +1039,28 @@ const MOBILE_CATEGORIES = {
 
 Object.entries(MOBILE_SITES).forEach(([siteKey, siteLabel]) => {
   ['cold', 'warm'].forEach((cacheVariant) => {
-    const bmKey = `tp6m-${siteKey}=${cacheVariant}`;
-    BENCHMARKS[bmKey] = { compare: {}, label: siteLabel };
-    Object.entries(MOBILE_APPS).forEach(([appKey, app]) => {
-      BENCHMARKS[bmKey].compare[appKey] = {
-        color: COLORS[appKey],
-        label: app.label,
-        frameworkId: BROWSERTIME_FRAMEWORK_ID,
-        suite: siteKey,
-        application: app.name,
-        platformSuffix: app.platformSuffix,
-        project: app.project,
-        option: 'opt',
-        extraOptions: [cacheVariant],
-      };
-      if (Array.isArray(app.extraOptions)) {
-        BENCHMARKS[bmKey].compare[appKey].extraOptions.push(...app.extraOptions);
-      }
+    VISUAL_METRICS.forEach((test) => {
+      const bmKey = `tp6m-${siteKey}-${test}-${cacheVariant}`;
+      BENCHMARKS[bmKey] = { compare: {}, label: `${siteLabel} (${test})` };
+      Object.entries(MOBILE_APPS).forEach(([appKey, app]) => {
+        BENCHMARKS[bmKey].compare[appKey] = {
+          color: COLORS[appKey],
+          label: app.label,
+          frameworkId: BROWSERTIME_FRAMEWORK_ID,
+          suite: siteKey,
+          test,
+          application: app.name,
+          platformSuffix: app.platformSuffix,
+          project: app.project,
+          option: 'opt',
+          extraOptions: [cacheVariant],
+        };
+        if (Array.isArray(app.extraOptions)) {
+          BENCHMARKS[bmKey].compare[appKey].extraOptions.push(...app.extraOptions);
+        }
+      });
+      MOBILE_CATEGORIES[`${cacheVariant}-page-load`].suites.push(bmKey);
     });
-    MOBILE_CATEGORIES[`${cacheVariant}-page-load`].suites.push(bmKey);
   });
 });
 
